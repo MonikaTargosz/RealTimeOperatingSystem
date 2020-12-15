@@ -52,6 +52,80 @@ Na podstawie wyżej dołączonych wykresów, zauważono, że szybkie zmiany, wzr
 
 ### Specyfikacja
 
+Metoda obsługi wyświetlenia:
+```
+void  Wyswietl(void *pdata){
+
+	struct struktura *wskazniknastruktura;
+	struct struktura dane;
+   	char   s[80];
+	char *msg;
+	unsigned long int liczniklokalny;
+	unsigned long int idlokalne;
+
+	INT8U  err;
+	INT8U j=0;
+	INT8U  x=0;
+	INT8U  y=6;
+	pdata = pdata;
+	
+    for(;;) {
+		wskazniknastruktura = OSQPend(structure, 0, &err);
+		dane=*wskazniknastruktura;
+		msg=dane.key;
+		sprintf(s, "%10lu", obciazenie); //wyowietla aktualnie dzia3aj1ce obci1?enie
+		PC_DispStr(0, 4, s, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+		idlokalne=dane.id;
+
+		//odpowiada za aktualizowanie wyowietlania licznika
+
+			if(idlokalne<6){			//do semaforów
+				liczniklokalny=dane.licznik;
+				sprintf(s, "%6ld", (liczniklokalny));
+     	   			PC_DispStr(50 , (7+((idlokalne))*2), s, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			}
+
+			else if(idlokalne>=6 && idlokalne<=11) //kolejek{
+				liczniklokalny=dane.licznik;
+				sprintf(s, "%6ld", (liczniklokalny));
+     	    			PC_DispStr(60 , (-5+((idlokalne))*2), s, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			}
+
+			else if(idlokalne>=12 && idlokalne<=17){  //mailboxów
+				liczniklokalny=dane.licznik;
+				sprintf(s, "%6ld", (liczniklokalny));
+     	    			PC_DispStr(70 , (-17+((idlokalne))*2), s, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			}
+
+		//obs3uguje wypisywanie wprowadzania obci1?enia
+
+	
+		if (*msg == 0x08){ //backspace 
+
+			if (x!=0){ // czyszczenie nastepuje tylko gdy nie znajdujemy sie na krawedzi 
+
+			x--;					
+			PC_DispChar(x, y, 32, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			}
+		}
+
+		else if (*msg == 0x0D){ //enter
+			for(j=0;j<10;j++) PC_DispChar(j, y, ' ', DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			x=0;
+			}
+			
+		else if(x<9 && *msg>47 && *msg<58){ //wypisuj znaki tylko z przedzi3u ASCII 47 --> 58 
+
+											//ale równie? nie pozwól wpisaa wiecej ni? 9 znaków
+
+			PC_DispChar(x, y, *msg, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+			x++;
+			}
+    	}
+
+}
+```
+
 Metoda obsługi semafora:
 
 ```
@@ -146,4 +220,5 @@ void Mailbox(void *pdata)
 
 	}
 ```
+
 
