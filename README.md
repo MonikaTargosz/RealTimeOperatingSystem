@@ -50,3 +50,100 @@ Następny błąd jaki popełniłyśmy to napisanie wykorzystanie tych funkcji w 
 Podsumowując, program pozwolił na zapoznanie się z systemem uCOS, zrozumieć mechanizmy występujące w systemach operacyjnych czasu rzeczywistego (RTOS). Należało odpowiednio zinterpretować zależność wartości obciążenia od ilości aktywnych zadań, liczby przełączanych zadań oraz obciążenia CPU procesora.
 Na podstawie wyżej dołączonych wykresów, zauważono, że szybkie zmiany, wzrosty i spadki poszczególnych zależności występują w podobnym przedziale wartości obciążenia. 
 
+### Specyfikacja
+
+Metoda obsługi semafora:
+
+```
+void  Semaphore(void *pdata){
+	struct struktura dane;
+	unsigned long int i;
+	int x;
+	unsigned long int obciazenielokalne;
+	unsigned long int licznikWykonania = 0;
+
+	for (;;){
+		dane.id= (int) pdata;//numer zadania
+		OSSemAccept(Sem);  //pobierz zajety zasób
+		obciazenielokalne = obciazenie; // przepisanie zmiennej globalnej do lokalne
+		OSSemPost(Sem); //zwolnij zajety zasób
+
+	for(i = 0; i < obciazenielokalne; i++) {x++;} //petla przeci1?enia
+
+
+		licznikWykonania++;					//inkrementacja liczby wykonan
+		dane.licznik = licznikWykonania;	//wpisanie do struktury
+		dane.obciazenie=obciazenielokalne;			//wpisanie do struktury
+		OSQPost(structure, &dane); 		// wys3anie struktury
+		OSTimeDly(1);
+	}
+
+}
+```
+
+
+Metoda obsługi kolejki:
+
+```
+void Queue(void *pdata){
+	struct struktura dane;
+	unsigned long int *odbierana;
+	unsigned long int i;
+	int x;
+	unsigned long int obciazenielokalne=1;
+	unsigned long int licznikWykonania = 0;
+
+	for (;;) {
+		dane.id=(int *) pdata;//numer zadania
+		odbierana =OSQAccept(Kol); //odbieramy nowe obci1?enie z kolejki
+
+		if (odbierana!=NULL){
+			obciazenielokalne = *((INT32U *)odbierana); // je?eli ró?ne od zera to przypisz
+		}	
+
+	    for(i = 0; i < obciazenielokalne; i++){x++;} //petla przeci1?enia
+
+		licznikWykonania++;		//inkrementacja liczby wykonan
+		dane.licznik = licznikWykonania; //wpisz do struktury
+		dane.obciazenie=obciazenielokalne;	//wpisz do struktury
+		OSQPost(structure, &dane); // wys3anie struktury
+		OSTimeDly(1);
+
+	}
+
+}
+```
+
+Metoda obsługi 'skrzynki wiadomości':
+```
+void Mailbox(void *pdata)
+{
+	struct struktura dane;
+	unsigned long int *odbierana;
+	unsigned long int i;
+	int x;
+	unsigned long int obciazenielokalne=1;
+	unsigned long int licznikWykonania = 0;
+
+	for (;;) {
+
+		dane.id=(int *)pdata;//numer zadania
+		odbierana = OSMboxAccept(Mail[dane.id-12]); //otrzymane od zadania rozg3aszaj1cego obci1?enie
+
+		if (odbierana!=NULL){ //je?eli odrzymana wartooa ró?na od 0
+			OSFlagPost(Mail_flag,1<<(dane.id-12),OS_FLAG_CLR, (void *)0);  //dajemy sygnal o zczytaniu wartosci ze skrzynki
+			obciazenielokalne = *((INT32U *)odbierana); // przypisanie wartooci ze skrzynki
+			OSMemPut(Mail_mem, (void *)odbierana);		//zwolnij pamiea
+		}
+
+	  for(i = 0; i < obciazenielokalne; i++){x++;} //petla przeci1?enia
+
+		licznikWykonania++;//inkrementacja liczby wykonan
+		dane.licznik = licznikWykonania; //wpisz do struktury
+		dane.obciazenie=obciazenielokalne;  //wpisz do struktury
+		OSQPost(structure, &dane); // wyslij swoje informacje
+		OSTimeDly(1);
+
+	}
+```
+
