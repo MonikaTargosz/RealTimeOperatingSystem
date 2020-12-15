@@ -99,25 +99,20 @@ void  Wyswietl(void *pdata){
 
 		//obs3uguje wypisywanie wprowadzania obci1?enia
 
-	
 		if (*msg == 0x08){ //backspace 
-
 			if (x!=0){ // czyszczenie nastepuje tylko gdy nie znajdujemy sie na krawedzi 
-
-			x--;					
-			PC_DispChar(x, y, 32, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
+				x--;					
+				PC_DispChar(x, y, 32, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
 			}
 		}
 
 		else if (*msg == 0x0D){ //enter
 			for(j=0;j<10;j++) PC_DispChar(j, y, ' ', DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
-			x=0;
+				x=0;
 			}
 			
 		else if(x<9 && *msg>47 && *msg<58){ //wypisuj znaki tylko z przedzi3u ASCII 47 --> 58 
-
-											//ale równie? nie pozwól wpisaa wiecej ni? 9 znaków
-
+						//ale równie? nie pozwól wpisaa wiecej ni? 9 znaków
 			PC_DispChar(x, y, *msg, DISP_FGND_BLACK + DISP_BGND_LIGHT_GRAY);
 			x++;
 			}
