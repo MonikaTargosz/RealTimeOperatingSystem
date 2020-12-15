@@ -40,6 +40,7 @@ void TaskX (void *p_arg){
       /* Check “err” */
    }
 }
+```
 
 Po otrzymaniu tej wartości wystarczyło podzielić ją przez częstotliwość pracy systemu 333 Hz, zadeklarowaną w pliku OS_CFG.c: OS_TICKS_PER_SEC 333 do otrzymania aktualnej sekundy.
 Następny błąd jaki popełniłyśmy to napisanie wykorzystanie tych funkcji w zadaniu Display(), zamiast dla poszczególnych: Mailbox(), Queue() i Semaphore().
